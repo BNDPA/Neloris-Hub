@@ -1,16 +1,24 @@
--- Загрузка библиотеки Obsidian UI (популярный шаблон для майнкрафт/роблокс эксплоитов)
+-- Загрузка библиотеки Obsidian UI
 local Library = loadstring(game:HttpGet("https://raw.githubusercontent.com/ObsidianUI/Obsidian/main/Source.lua"))()
 
 -- Создание окна системы ключа
 local KeyWindow = Library:CreateWindow({
-    Name = "Neloris Hub | Key System",
-    Theme = "Dark",
-    Logo = "rbxassetid://0000000000" -- Замени при необходимости на свой кастомный ID иконки
+    Name = "NelorisHubFree | Key System",
+    Theme = "Dark"
 })
 
 local KeyTab = KeyWindow:AddTab("Авторизация")
 
-local CorrectKey = "NelorisHub.cc_278283"
+-- Распределение ключей и соответствующих им файлов
+local ValidKeys = {
+    ["NelorisHubFree"] = "Hub.lua",
+    ["NelorisHub.cc_7h66k5"] = "HubCC.lua",
+    ["NelorisHub.cc_jc727k"] = "HubCC.lua",
+    ["NelorisHub.cc_01421"] = "HubCC.lua",
+    ["NelorisHub.cc_3757b"] = "HubCC.lua",
+    ["NelorisHub.cc_3774j"] = "HubCC.lua"
+}
+
 local EnteredKey = ""
 
 -- Поле ввода ключа
@@ -26,16 +34,26 @@ KeyTab:AddTextbox({
 KeyTab:AddButton({
     Name = "Проверить ключ",
     Callback = function()
-        if EnteredKey == CorrectKey then
+        local targetFile = ValidKeys[EnteredKey]
+        
+        if targetFile then
             Library:Notify({
                 Title = "Успешно!",
-                Content = "Ключ принят. Добро пожаловать в Neloris Hub!",
+                Content = "Ключ принят. Загрузка " .. targetFile .. "...",
                 Duration = 3
             })
             
-            -- Закрываем окно ключа и открываем основной интерфейс читов/хаба
+            -- Закрываем окно ключа
             KeyWindow:Close()
-            CreateMainHub()
+            
+            -- Загружаем и запускаем нужный файл из репозитория BNDPA/NelorisHub
+            local success, err = pcall(function()
+                loadstring(game:HttpGet("https://raw.githubusercontent.com/BNDPA/NelorisHub/main/" .. targetFile))()
+            end)
+            
+            if not success then
+                warn("Не удалось загрузить " .. targetFile .. ": " .. tostring(err))
+            end
         else
             Library:Notify({
                 Title = "Ошибка",
@@ -45,22 +63,3 @@ KeyTab:AddButton({
         end
     end
 })
-
--- Функция основного меню хаба (появляется после ввода ключа)
-function CreateMainHub()
-    local MainWindow = Library:CreateWindow({
-        Name = "Neloris Hub | Main",
-        Theme = "Dark"
-    })
-
-    local MainTab = MainWindow:AddTab("Главная")
-
-    MainTab:AddLabel("Добро пожаловать в Neloris Hub!")
-    
-    MainTab:AddButton({
-        Name = "Пример функции",
-        Callback = function()
-            print("Функция активирована!")
-        end
-    })
-end
